@@ -5,7 +5,7 @@ import {
   CustomersTableType,
   FormattedCustomersTable,
 } from '@/app/lib/definitions';
-import { CreateCustomer } from './buttons';
+import { CreateCustomer, UpdateCustomer } from './buttons';
 
 export default async function CustomersTable({
   customers,
@@ -100,6 +100,7 @@ export default async function CustomersTable({
                             height={28}
                           />
                           <p>{customer.name}</p>
+                          <UpdateCustomer id={`${customer.id}`} />
                         </div>
                       </td>
                       <td className="whitespace-nowrap bg-white px-4 py-5 text-sm">
