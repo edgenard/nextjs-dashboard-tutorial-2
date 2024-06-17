@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-const FormSchema = z.object({
+const InvoiceFormSchema = z.object({
   id: z.string(),
   customerId: z.string({
     invalid_type_error: 'Please select  a customer',
@@ -19,7 +19,7 @@ const FormSchema = z.object({
   date: z.string(),
 });
 
-export type State = {
+export type InvoiceFormState = {
   errors?: {
     customerId?: string[];
     amount?: string[];
@@ -28,9 +28,12 @@ export type State = {
   message?: string | null;
 };
 
-const CreateInvoice = FormSchema.omit({ id: true, date: true });
+const CreateInvoice = InvoiceFormSchema.omit({ id: true, date: true });
 
-export async function createInvoice(prevState: State, formData: FormData) {
+export async function createInvoice(
+  prevState: InvoiceFormState,
+  formData: FormData,
+) {
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -62,7 +65,7 @@ export async function createInvoice(prevState: State, formData: FormData) {
   redirect('/dashboard/invoices');
 }
 
-const UpdateInvoice = FormSchema.omit({ id: true, date: true });
+const UpdateInvoice = InvoiceFormSchema.omit({ id: true, date: true });
 export async function updateInvoice(id: string, formData: FormData) {
   const { customerId, amount, status } = UpdateInvoice.parse({
     customerId: formData.get('customerId'),
@@ -98,4 +101,54 @@ export async function deleteInvoice(id: string) {
       message: 'Database Error: Failed to delete invoice',
     };
   }
+}
+
+const CustomerFormSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  image_url: z.string(),
+});
+
+const CreateCustomer = CustomerFormSchema.omit({ id: true });
+
+export type CustomerFormState = {
+  errors?: {
+    name?: string[];
+    email?: string[];
+    image_url?: string[];
+  };
+  messages?: string | null;
+};
+export async function createCustomer(
+  prevState: CustomerFormState,
+  formData: FormData,
+) {
+  const validatedFields = CreateCustomer.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    image_url: formData.get('image_url'),
+  });
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Customer.',
+    };
+  }
+
+  const { name, email, image_url } = validatedFields.data;
+  try {
+    await sql`
+    INSERT INTO customers (name, email, image_url)
+    VALUES (${name}, ${email}, ${image_url})
+    `;
+  } catch (error) {
+    console.error('Error saving customer to DB', error);
+    return {
+      message: 'Database Error. Failed to save Customer',
+    };
+  }
+
+  revalidatePath('/dashboard/customers');
+  redirect('/dashboard/customers');
 }

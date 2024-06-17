@@ -5,6 +5,7 @@ import {
   CustomersTableType,
   FormattedCustomersTable,
 } from '@/app/lib/definitions';
+import { CreateCustomer } from './buttons';
 
 export default async function CustomersTable({
   customers,
@@ -17,10 +18,12 @@ export default async function CustomersTable({
         Customers
       </h1>
       <Search placeholder="Search customers..." />
+      <CreateCustomer />
       <div className="mt-6 flow-root">
         <div className="overflow-x-auto">
           <div className="inline-block min-w-full align-middle">
             <div className="overflow-hidden rounded-md bg-gray-50 p-2 md:pt-0">
+              {/* Customer table for mobile breakpoint */}
               <div className="md:hidden">
                 {customers?.map((customer) => (
                   <div
@@ -62,6 +65,7 @@ export default async function CustomersTable({
                   </div>
                 ))}
               </div>
+              {/* End of Customers Table for Mobile Breakpoint */}
               <table className="hidden min-w-full rounded-md text-gray-900 md:table">
                 <thead className="rounded-md bg-gray-50 text-left text-sm font-normal">
                   <tr>
