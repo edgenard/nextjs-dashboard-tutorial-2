@@ -12,13 +12,11 @@ interface SearchParams {
   page?: string;
 }
 
-export default async function Page(
-  {
-    searchParams,
-  }: {
-    searchParams: SearchParams;
-  } = { searchParams: { query: '', page: '1' } }, // TODO: this apparently does nothing
-) {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
   const totalPages = await fetchCustomerPages(query);
