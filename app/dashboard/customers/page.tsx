@@ -16,7 +16,7 @@ export default async function Page(
   {
     searchParams,
   }: {
-    searchParams?: SearchParams;
+    searchParams: SearchParams;
   } = { searchParams: { query: '', page: '1' } }, // TODO: this apparently does nothing
 ) {
   const query = searchParams?.query || '';
